@@ -1,14 +1,12 @@
 const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
 
-// Force Google DNS-over-HTTPS globally before startup
-app.commandLine.appendSwitch('dns-over-https-templates', 'https://dns.google/dns-query');
+// REMOVED the old commandLine switch so it doesn't conflict with our strict secure settings
 
 function createWindow(isIncognito = false) {
   const win = new BrowserWindow({
     width: 1280,
     height: 800,
-    // This adds your app icon to the window taskbar/dock!
     icon: path.join(__dirname, 'icon256.png'),
     webPreferences: {
       nodeIntegration: true,
@@ -22,19 +20,26 @@ function createWindow(isIncognito = false) {
 }
 
 app.whenReady().then(() => {
+  // Enforce strict, redundant DoH with multi-provider backup
+  app.configureHostResolver({
+    secureDnsMode: 'secure', // Keeps the "privacy kill-switch" active
+    secureDnsServers: [
+      'https://dns.google/dns-query{?dns}',        // 1. Primary: Google DoH
+      'https://cloudflare-dns.com/dns-query',       // 2. Secondary: Cloudflare DoH
+      'https://dns.quad9.net/dns-query'             // 3. Tertiary: Quad9 DoH (Redundancy)
+    ]
+  });
+
   createWindow();
 
   // Intercept all webview popup attempts globally and route them to tabs
   app.on('web-contents-created', (event, contents) => {
     if (contents.getType() === 'webview') {
       contents.setWindowOpenHandler((details) => {
-        // Find which window this webview belongs to
         const parentWin = BrowserWindow.fromWebContents(contents);
         if (parentWin) {
-          // Send the URL straight to that specific window's tab bar
           parentWin.webContents.send('open-link-in-tab', details.url);
         }
-        // Deny Electron's default behavior of spawning a new native window
         return { action: 'deny' };
       });
     }
