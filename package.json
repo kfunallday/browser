@@ -1,0 +1,52 @@
+{
+  "name": "ks-browser",
+  "version": "1.1.0",
+  "description": "Custom high-performance browser with integrated search engine",
+  "main": "main.js",
+  "author": "Kente <kfunalldaay@kssearchengine.com>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kfunalldaay/browser.git"
+  },
+  "scripts": {
+    "start": "electron .",
+    "build:linux": "electron-builder --linux deb --x64",
+    "build:win": "electron-builder --win nsis --x64",
+    "build:all": "electron-builder --linux deb --win nsis --x64"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "electron": "^31.0.0",
+    "electron-builder": "^24.13.3"
+  },
+  "build": {
+    "appId": "com.kssearchengine.browser",
+    "productName": "KSBrowser",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.js",
+      "index.html",
+      "icon256.png",
+      "icon256.ico"
+    ],
+    "win": {
+      "target": [
+        "nsis"
+      ],
+      "icon": "icon256.ico"
+    },
+    "linux": {
+      "target": [
+        "deb"
+      ],
+      "category": "Network",
+      "executableName": "ks-browser",
+      "icon": "icon256.png",
+      "desktop": {
+        "StartupWMClass": "ks-browser"
+      }
+    }
+  }
+}
