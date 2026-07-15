@@ -10,9 +10,9 @@
   },
   "scripts": {
     "start": "electron .",
-    "build:linux": "electron-builder --linux deb --x64",
-    "build:win": "electron-builder --win nsis --x64",
-    "build:all": "electron-builder --linux deb --win nsis --x64"
+    "build:linux": "electron-builder --linux deb --x64 --publish never",
+    "build:win": "electron-builder --win nsis --x64 --publish never",
+    "build:all": "electron-builder --linux deb --win nsis --x64 --publish never"
   },
   "dependencies": {},
   "devDependencies": {
